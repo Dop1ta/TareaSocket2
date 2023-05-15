@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -9,21 +10,42 @@
 
 using namespace std;
 
-int main()
+void socketS(int port);
+
+int main(int argc, char *argv[])
 {
-  // Create a socket
+
+  if (argv[1] == NULL)
+  {
+    cout << "Porfavor ingrese el puerto" << endl;
+    return 0;
+  }
+
+  int port = atoi(argv[1]);
+
+  socketS(port);
+
+  return 0;
+}
+
+void socketS(int port)
+{
+
+  cout << "port" << port << endl;
+
+  // Creacion del socket
   int listening = socket(AF_INET, SOCK_STREAM, 0);
   if (listening == -1)
   {
-    cerr << "Can't create a socket! Quitting" << endl;
-    return -1;
+    cerr << "No se puede crear el socket" << endl;
+    exit(-1);
   }
 
   // Bind the ip address and port to a socket
   sockaddr_in hint;
   hint.sin_family = AF_INET;
-  hint.sin_port = htons(54000);
-  inet_pton(AF_INET, "0.0.0.0", &hint.sin_addr);
+  hint.sin_port = htons(port); // Puerto
+  inet_pton(AF_INET, "192.168.0.1", &hint.sin_addr);
 
   bind(listening, (sockaddr *)&hint, sizeof(hint));
 
@@ -78,12 +100,9 @@ int main()
 
     cout << string(buf, 0, bytesReceived) << endl;
 
-    // Echo message back to client
     send(clientSocket, buf, bytesReceived + 1, 0);
   }
 
   // Close the socket
   close(clientSocket);
-
-  return 0;
 }

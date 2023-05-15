@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -9,8 +10,15 @@
 
 using namespace std;
 
-int main()
+int main(int argc, char *argv[])
 {
+
+  if (argv[1] == NULL || argv[2] == NULL)
+  {
+    cout << "Porfavor ingrese el puerto y la IP" << endl;
+    return 0;
+  }
+
   // Create a socket
   int sock = socket(AF_INET, SOCK_STREAM, 0);
   if (sock == -1)
@@ -19,17 +27,21 @@ int main()
     return -1;
   }
 
+  int port = atoi(argv[2]);
+
   // Create a hint structure for the server we're connecting with
   sockaddr_in hint;
   hint.sin_family = AF_INET;
-  hint.sin_port = htons(54000);
-  inet_pton(AF_INET, "127.0.0.1", &hint.sin_addr); // Use the IP address of the server here
+  hint.sin_port = htons(port);
+
+  // inet_pton(AF_INET, "127.0.0.1", &hint.sin_addr); // Use the IP address of the server here
+  inet_pton(AF_INET, argv[1], &hint.sin_addr); // Use the IP address of the server here
 
   // Connect to the server on the socket
   int connectRes = connect(sock, (sockaddr *)&hint, sizeof(hint));
   if (connectRes == -1)
   {
-    cerr << "Can't connect to server" << endl;
+    cerr << "No se puede conectar al server" << endl;
     return -2;
   }
 
@@ -40,7 +52,7 @@ int main()
   do
   {
     // Prompt the user for some text
-    cout << "> ";
+    cout << "Ingrese coordeandas donde quiere disparar > ";
     getline(cin, userInput);
 
     // Send the text
