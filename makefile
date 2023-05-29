@@ -1,5 +1,4 @@
 programa: all
-	./server 54000
 	
 all: Client.o Server.o SocketThread.o Utils.o Shots.o
 	g++ -o client Client.o Utils.o
