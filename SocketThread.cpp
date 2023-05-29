@@ -50,6 +50,8 @@ void SocketThread::startThread()
 
   send(clientSocket, welcome_message.c_str(), welcome_message.size() + 1, 0);
 
+  int cont = 0;
+
   while (true)
   {
 
@@ -82,6 +84,7 @@ void SocketThread::startThread()
         if (miTablaServerS[i * BORDERMAPS + j] == 'X')
         {
           tablaServ += 'X';
+          cont++;
         }
         else
         {
@@ -93,8 +96,12 @@ void SocketThread::startThread()
     frase_str = "!Le diste a algo!!";
 
     welcome_message += frase_str + tablaClient + tablaServ;
-
     send(clientSocket, welcome_message.c_str(), welcome_message.size() + 1, 0);
+
+    if (cont == 22)
+    {
+      close(clientSocket);
+    }
   }
 
   close(clientSocket); // Se cierra el socket del cliente
